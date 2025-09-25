@@ -12,7 +12,12 @@ export const signup = async (req, res) => {
     success: true,
     message: "User registered successfully",
     token,
-    user: { id: user.id, name: user.name, email: user.email },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      wishlistCount: user.wishlistCount,
+    },
   })
 }
 
@@ -37,6 +42,11 @@ export const login = async (req, res) => {
     success: true,
     message: "User logged-In successfully",
     token,
-    user: { id: user.id, name: user.name, email: user.email },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      wishlistCount: user.wishlistCount,
+    },
   })
 }
