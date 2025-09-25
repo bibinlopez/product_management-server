@@ -1,69 +1,69 @@
 import mongoose from "mongoose"
 
-const productSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: false,
-    },
-    images: [
-      {
+export const productSchema = mongoose.model(
+  "Product",
+  new mongoose.Schema(
+    {
+      title: {
+        type: String,
+        required: true,
+      },
+      description: {
         type: String,
         required: false,
       },
-    ],
-    variants: [
-      {
+      images: [
+        {
+          type: String,
+          required: false,
+        },
+      ],
+      subcategory: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Varient",
+        ref: "Subcategory",
         required: true,
       },
-    ],
-    subcategory: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subcategory",
-      required: true,
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
     },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-  },
-  { timestamps: true }
+    { timestamps: true }
+  )
 )
+export const variantSchema = mongoose.model(
+  "Variant",
+  new mongoose.Schema(
+    {
+      name: {
+        type: String,
+        required: false,
+      },
+      ram: {
+        type: Number,
+        required: false,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+      },
 
-const variantSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: false,
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
+      },
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
     },
-    ram: {
-      type: String,
-      required: false,
-    },
-    price: {
-      type: String,
-      required: true,
-    },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-  },
-  { timestamps: true }
+    { timestamps: true }
+  )
 )
-
-export const product = mongoose.model("Product", productSchema)
-export const vairant = mongoose.model("Variant", variantSchema)
