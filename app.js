@@ -6,6 +6,7 @@ import cors from "cors"
 
 import authRoute from "./routes/authRoutes.js"
 import categoryRoute from "./routes/categoryRoute.js"
+import authMiddleware from "./middlewares/authMiddleware.js"
 
 const app = express()
 
@@ -13,12 +14,12 @@ app.use(express.json())
 
 app.use(cors())
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Welcome to api landing page..")
 })
 
 app.use("/api/auth", authRoute)
-app.use("/api/product", categoryRoute)
+app.use("/api/product", authMiddleware, categoryRoute)
 
 app.use((err, req, res, next) =>
   res

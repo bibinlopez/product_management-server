@@ -3,10 +3,16 @@ import userSchema from "../models/userSchema.js"
 import { categorySchema, subcategorySchema } from "../models/categorySchema.js"
 
 export const addCategory = async (req, res) => {
+  const { userId } = req.user
   const { name } = req.body
+
+  if (!name) {
+    throw new CustomError("please provide value", 400)
+  }
+
   const category = await categorySchema.create({
     name,
-    createdBy: "68d56f9e98f0eb05387b497b",
+    createdBy: userId,
   })
 
   return res.status(200).json({
@@ -17,12 +23,17 @@ export const addCategory = async (req, res) => {
 }
 
 export const addSubcategory = async (req, res) => {
-  const { name } = req.body
+  const { userId } = req.user
+  const { name, categoryId } = req.body
+
+  if (!name || !categoryId) {
+    throw new CustomError("please provide values", 400)
+  }
 
   const subcategory = await subcategorySchema.create({
     name,
-    category: "68d57237c25a3a9efb6324f1",
-    createdBy: "68d56f9e98f0eb05387b497b",
+    category: categoryId,
+    createdBy: userId,
   })
 
   return res.status(200).json({
@@ -33,7 +44,16 @@ export const addSubcategory = async (req, res) => {
 }
 
 export const getAllCategories = async (req, res) => {
-  const categories = await categorySchema.find({})
+  const categories = await categorySchema.aggregate([
+    {
+      $lookup: {
+        from: "subcategories",
+        localField: "_id",
+        foreignField: "category",
+        as: "subcategories",
+      },
+    },
+  ])
   if (categories.length === 0) {
     throw new CustomError("no categories found ", 404)
   }
