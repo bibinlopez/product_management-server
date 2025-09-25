@@ -1,38 +1,41 @@
 import mongoose from "mongoose"
 
-const categorySchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
+export const categorySchema = mongoose.model(
+  "Category",
+  new mongoose.Schema(
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
     },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  },
 
-  { timestamps: true }
+    { timestamps: true }
+  )
 )
 
-const subcategorySchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
+export const subcategorySchema = mongoose.model(
+  "Subcategory",
+  new mongoose.Schema(
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
     },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  },
 
-  { timestamps: true }
+    { timestamps: true }
+  )
 )
-
-export const category = mongoose.model("Category", categorySchema)
-export const subcategory = mongoose.model("Subcategory", subcategorySchema)
