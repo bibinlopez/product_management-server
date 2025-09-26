@@ -16,7 +16,7 @@ export const addProduct = async (req, res) => {
   variants.forEach((vairant) => {
     const { ram, price, quantity } = vairant
     if (!ram || !price || !quantity) {
-      throw new CustomError("please provide values for the variant")
+      throw new CustomError("please provide values for the variant", 400)
     }
   })
 
@@ -44,11 +44,15 @@ export const addProduct = async (req, res) => {
 }
 
 export const getProducts = async (req, res) => {
-  const query = req.query
+  const { subcategoryIds, search, limit = 10, page = 1 } = req.query
 
-  const products = await productSchema.find({
-    // conditons
-  })
+  const products = await productSchema
+    .find({
+      name: { $regex: search, $options: "i" },
+      subcategory: { $in: subcategoryIds },
+    })
+    .skip((page - 1) * limit)
+    .limit(limit)
 
   return res.status(200).json({
     success: true,
@@ -60,6 +64,48 @@ export const getProduct = async (req, res) => {
   const id = req.params
 
   const product = await productSchema.findById(id)
+
+  if (!product) {
+    throw new CustomError("product product not found", 404)
+  }
+
+  const variants = await variantSchema.find({ product: product.id })
+
+  return res.status(200).json({
+    success: true,
+    product,
+    variants,
+  })
+}
+
+export const editProduct = async (req, res) => {
+  const { userId } = req.user
+  const id = req.params
+  const { vairants, ...productData } = req.body
+
+  const product = await productSchema.findById(id)
+  if (!product) {
+    throw new CustomError("product product not found", 404)
+  }
+  await productSchema.findByIdAndUpdate(product.id, {
+    ...productData,
+    updatedBy: userId,
+  })
+
+  const existingvariants = await variantSchema.find({ product: product.id })
+
+  for (const existingvariant of existingvariants) {
+    for (const variant of vairants) {
+      const { ram, price, quantity } = variant
+      if (existingvariant.id === variant.id) {
+        await variantSchema.findByIdAndUpdate(variant.id, {
+          ram,
+          price,
+          quantity,
+        })
+      }
+    }
+  }
 
   return res.status(200).json({
     success: true,
