@@ -24,7 +24,7 @@ app.get("/api", (req, res) => {
 app.use("/api/auth", authRoute)
 app.use("/api/product", authMiddleware, categoryRoute)
 app.use("/api/product", authMiddleware, productRoute)
-app.use("/api/product", authMiddleware, wishlistRoute)
+app.use("/api/wishlist", authMiddleware, wishlistRoute)
 app.use("/api/user", authMiddleware, userRoute)
 
 app.use((err, req, res, next) =>

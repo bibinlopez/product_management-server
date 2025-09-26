@@ -3,11 +3,13 @@ import {
   addCategory,
   addSubcategory,
   getAllCategories,
+  getAllCategoriesSubcategories,
 } from "../controllers/category.controller.js"
 const router = express.Router()
 
 router.post("/category", addCategory)
 router.post("/subcategory", addSubcategory)
+router.get("/categories-subcategories", getAllCategoriesSubcategories)
 router.get("/categories", getAllCategories)
 
 export default router

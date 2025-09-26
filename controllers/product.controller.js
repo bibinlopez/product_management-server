@@ -44,13 +44,16 @@ export const addProduct = async (req, res) => {
 }
 
 export const getProducts = async (req, res) => {
-  const { subcategoryIds, search, limit = 10, page = 1 } = req.query
+  const { subcategoryIds = [], search = "", limit = 10, page = 1 } = req.query
+
+  let queryObject = { title: { $regex: search ? search : "", $options: "i" } }
+
+  if (subcategoryIds.length > 0) {
+    queryObject.subcategory = subcategoryIds
+  }
 
   const products = await productSchema
-    .find({
-      name: { $regex: search, $options: "i" },
-      subcategory: { $in: subcategoryIds },
-    })
+    .find(queryObject)
     .skip((page - 1) * limit)
     .limit(limit)
 
@@ -61,7 +64,7 @@ export const getProducts = async (req, res) => {
 }
 
 export const getProduct = async (req, res) => {
-  const id = req.params
+  const { id } = req.params
 
   const product = await productSchema.findById(id)
 

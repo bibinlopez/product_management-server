@@ -43,7 +43,7 @@ export const addSubcategory = async (req, res) => {
   })
 }
 
-export const getAllCategories = async (req, res) => {
+export const getAllCategoriesSubcategories = async (req, res) => {
   const categories = await categorySchema.aggregate([
     {
       $lookup: {
@@ -57,6 +57,15 @@ export const getAllCategories = async (req, res) => {
   if (categories.length === 0) {
     throw new CustomError("no categories found ", 404)
   }
+
+  return res.status(200).json({
+    success: true,
+    categories,
+  })
+}
+
+export const getAllCategories = async (req, res) => {
+  const categories = await categorySchema.find()
 
   return res.status(200).json({
     success: true,

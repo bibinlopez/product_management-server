@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
 export const productSchema = mongoose.model(
   "Product",
@@ -31,7 +31,7 @@ export const productSchema = mongoose.model(
       updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        required: false,
       },
       createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -41,7 +41,7 @@ export const productSchema = mongoose.model(
     },
     { timestamps: true }
   )
-);
+)
 export const variantSchema = mongoose.model(
   "Variant",
   new mongoose.Schema(
@@ -76,4 +76,4 @@ export const variantSchema = mongoose.model(
     },
     { timestamps: true }
   )
-);
+)

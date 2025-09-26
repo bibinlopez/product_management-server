@@ -23,13 +23,11 @@ export const addToWishlist = async (req, res) => {
 export const getWishlist = async (req, res) => {
   const { userId } = req.user
 
-  const wishlist = await wishlistSchema.find({ user: userId })
+  const wishlist = await wishlistSchema
+    .find({ user: userId })
+    .populate({ path: "variant", populate: { path: "product" } })
 
   const count = wishlist.length
-
-  if (count === 0) {
-    throw new CustomError("no items found ", 404)
-  }
 
   return res.status(200).json({
     success: true,
@@ -39,15 +37,15 @@ export const getWishlist = async (req, res) => {
 
 export const deleteFromWishlist = async (req, res) => {
   const { userId } = req.user
-  const { productId } = req.body
+  const { variantId } = req.body
 
   const wishlist = await wishlistSchema.findOne({
     user: userId,
-    product: productId,
+    variant: variantId,
   })
 
   if (!wishlist) {
-    throw new CustomError("no item found ", 404)
+    throw new CustomError("Item does not exists in your wishlist", 404)
   }
 
   await wishlistSchema.findByIdAndDelete(wishlist.id)
@@ -55,6 +53,5 @@ export const deleteFromWishlist = async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Item removed from wishlist successfully",
-    subcategory,
   })
 }
