@@ -6,26 +6,36 @@ export const addProduct = async (req, res) => {
   const { title, description, subcategoryId, variants } = req.body
 
   if (!title || !subcategoryId) {
-    throw new CustomError("please provide productId", 400)
+    throw new CustomError("please provide values", 400)
   }
 
-  if (!variants.length) {
+  if (!variants || !variants.length) {
     throw new CustomError("product need atleast one vairant")
   }
 
   variants.forEach((vairant) => {
-    const { ram, price, quatity } = vairant
-    if (!ram || !price || !quatity) {
+    const { ram, price, quantity } = vairant
+    if (!ram || !price || !quantity) {
       throw new CustomError("please provide values for the variant")
     }
   })
 
-  await productSchema.create({
+  const product = await productSchema.create({
     title,
     description,
+    subcategory: subcategoryId,
     createdBy: userId,
   })
-  await variantSchema.insertMany(variants)
+
+  const variantsList = variants.map((vairant) => {
+    const { ram, price, quantity } = vairant
+    if (!ram || !price || !quantity) {
+      throw new CustomError("please provide values for the variant")
+    }
+    return { createdBy: userId, product: product.id, ...vairant }
+  })
+
+  await variantSchema.insertMany(variantsList)
 
   return res.status(200).json({
     success: true,

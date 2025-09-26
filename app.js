@@ -4,9 +4,11 @@ import express from "express"
 import mongoose from "mongoose"
 import cors from "cors"
 
+import authMiddleware from "./middlewares/authMiddleware.js"
 import authRoute from "./routes/authRoutes.js"
 import categoryRoute from "./routes/categoryRoute.js"
-import authMiddleware from "./middlewares/authMiddleware.js"
+import productRoute from "./routes/productRoutes.js"
+import wishlistRoute from "./routes/wishlistRoutes.js"
 
 const app = express()
 
@@ -20,6 +22,8 @@ app.get("/api", (req, res) => {
 
 app.use("/api/auth", authRoute)
 app.use("/api/product", authMiddleware, categoryRoute)
+app.use("/api/product", authMiddleware, productRoute)
+app.use("/api/user", authMiddleware, wishlistRoute)
 
 app.use((err, req, res, next) =>
   res
