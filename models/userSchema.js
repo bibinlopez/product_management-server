@@ -19,9 +19,6 @@ const userSchema = new mongoose.Schema(
     passwordHash: {
       type: String,
     },
-    wishlistCount: {
-      type: Number,
-    },
   },
   { timestamps: true }
 )

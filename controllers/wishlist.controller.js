@@ -4,16 +4,15 @@ import wishlistSchema from "../models/wishlistSchema.js"
 
 export const addToWishlist = async (req, res) => {
   const { userId } = req.user
-  const { productId } = req.body
+  const { variantId } = req.body
 
-  if (!productId) {
-    throw new CustomError("please provide productId", 400)
+  if (!variantId) {
+    throw new CustomError("please provide variantId", 400)
   }
   await wishlistSchema.create({
-    product: productId,
+    variant: variantId,
     user: userId,
   })
-  await userSchema.findByIdAndUpdate(userId, { $inc: { count: 1 } })
 
   return res.status(200).json({
     success: true,
@@ -25,13 +24,16 @@ export const getWishlist = async (req, res) => {
   const { userId } = req.user
 
   const wishlist = await wishlistSchema.find({ user: userId })
-  if (wishlist.length === 0) {
+
+  const count = wishlist.length
+
+  if (count === 0) {
     throw new CustomError("no items found ", 404)
   }
 
   return res.status(200).json({
     success: true,
-    wishlist,
+    wishlist: { count, data: wishlist },
   })
 }
 

@@ -9,6 +9,7 @@ import authRoute from "./routes/authRoutes.js"
 import categoryRoute from "./routes/categoryRoute.js"
 import productRoute from "./routes/productRoutes.js"
 import wishlistRoute from "./routes/wishlistRoutes.js"
+import userRoute from "./routes/userRoute.js"
 
 const app = express()
 
@@ -23,7 +24,8 @@ app.get("/api", (req, res) => {
 app.use("/api/auth", authRoute)
 app.use("/api/product", authMiddleware, categoryRoute)
 app.use("/api/product", authMiddleware, productRoute)
-app.use("/api/user", authMiddleware, wishlistRoute)
+app.use("/api/product", authMiddleware, wishlistRoute)
+app.use("/api/user", authMiddleware, userRoute)
 
 app.use((err, req, res, next) =>
   res
