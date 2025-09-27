@@ -3,7 +3,7 @@ import { productSchema, variantSchema } from "../models/productSchema.js"
 
 export const addProduct = async (req, res) => {
   const { userId } = req.user
-  const { title, description, subcategoryId, variants } = req.body
+  const { title, description, subcategoryId, variants, images } = req.body
 
   if (!title || !subcategoryId) {
     throw new CustomError("please provide values", 400)
@@ -23,6 +23,8 @@ export const addProduct = async (req, res) => {
   const product = await productSchema.create({
     title,
     description,
+    images,
+    tempPrice: variants[0]?.price, //set tempPrice
     subcategory: subcategoryId,
     createdBy: userId,
   })
@@ -44,10 +46,10 @@ export const addProduct = async (req, res) => {
 }
 
 export const getProducts = async (req, res) => {
-  const { subcategoryIds = [], search = "", limit = 10, page = 1 } = req.query
+  let { subcategoryIds, search = "", limit = 10, page = 1 } = req.query
 
   let queryObject = { title: { $regex: search ? search : "", $options: "i" } }
-
+  subcategoryIds = JSON.parse(subcategoryIds)
   if (subcategoryIds.length > 0) {
     queryObject.subcategory = subcategoryIds
   }
@@ -65,6 +67,7 @@ export const getProducts = async (req, res) => {
 
 export const getProduct = async (req, res) => {
   const { id } = req.params
+  console.log({ vl: req.query })
 
   const product = await productSchema.findById(id)
 

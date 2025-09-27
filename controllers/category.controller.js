@@ -72,3 +72,11 @@ export const getAllCategories = async (req, res) => {
     categories,
   })
 }
+export const getAllSubcategories = async (req, res) => {
+  const subcategories = await subcategorySchema.find()
+
+  return res.status(200).json({
+    success: true,
+    subcategories,
+  })
+}

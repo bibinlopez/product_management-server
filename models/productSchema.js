@@ -38,6 +38,10 @@ export const productSchema = mongoose.model(
         ref: "User",
         required: true,
       },
+      tempPrice: {
+        type: Number,
+        required: false,
+      },
     },
     { timestamps: true }
   )
@@ -51,7 +55,7 @@ export const variantSchema = mongoose.model(
         required: false,
       },
       ram: {
-        type: Number,
+        type: String,
         required: false,
       },
       price: {
