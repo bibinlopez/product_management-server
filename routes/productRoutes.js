@@ -1,6 +1,7 @@
 import express from "express"
 import {
   addProduct,
+  buyProduct,
   editProduct,
   getProduct,
   getProducts,
@@ -11,5 +12,6 @@ router.post("/", addProduct)
 router.get("/", getProducts)
 router.get("/:id", getProduct)
 router.put("/:id", editProduct)
+router.post("/buy", buyProduct)
 
 export default router

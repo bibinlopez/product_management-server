@@ -9,6 +9,20 @@ export const addToWishlist = async (req, res) => {
   if (!variantId) {
     throw new CustomError("please provide variantId", 400)
   }
+
+  const wishlist = await wishlistSchema.findOne({
+    user: userId,
+    variant: variantId,
+  })
+
+  if (wishlist) {
+    await wishlistSchema.findOneAndDelete(wishlist.id)
+    return res.status(200).json({
+      success: true,
+      message: "Removed from wishlist",
+    })
+  }
+
   await wishlistSchema.create({
     variant: variantId,
     user: userId,
@@ -16,7 +30,7 @@ export const addToWishlist = async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    message: "Added to wishlist successfully",
+    message: "Added to wishlist",
   })
 }
 

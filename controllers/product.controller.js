@@ -1,5 +1,6 @@
 import CustomError from "../error/custom-error.js"
 import { productSchema, variantSchema } from "../models/productSchema.js"
+import wishlistSchema from "../models/wishlistSchema.js"
 
 export const addProduct = async (req, res) => {
   const { userId } = req.user
@@ -50,8 +51,9 @@ export const getProducts = async (req, res) => {
 
   let queryObject = { title: { $regex: search ? search : "", $options: "i" } }
   subcategoryIds = JSON.parse(subcategoryIds)
+
   if (subcategoryIds.length > 0) {
-    queryObject.subcategory = subcategoryIds
+    queryObject.subcategory = { $in: subcategoryIds }
   }
 
   const products = await productSchema
@@ -66,8 +68,9 @@ export const getProducts = async (req, res) => {
 }
 
 export const getProduct = async (req, res) => {
+  const { userId, name } = req.user
+
   const { id } = req.params
-  console.log({ vl: req.query })
 
   const product = await productSchema.findById(id)
 
@@ -77,10 +80,33 @@ export const getProduct = async (req, res) => {
 
   const variants = await variantSchema.find({ product: product.id })
 
+  const varientIds = variants.map((vairant) => vairant.id)
+
+  const wishlist = await wishlistSchema.find({
+    user: userId,
+    variant: { $in: varientIds },
+  })
+  console.log({ wishlist })
+
+  let newVarients = [...variants]
+  if (wishlist.length) {
+    const wishlistIds = wishlist.map((wishlist) =>
+      wishlist.variant._id.toString()
+    )
+
+    newVarients = variants.map((variant) => {
+      if (wishlistIds.includes(variant._id.toString())) {
+        const { _id, price, quantity, ram } = variant
+
+        return { _id, price, quantity, ram, wishlist: true }
+      } else return variant
+    })
+  }
+
   return res.status(200).json({
     success: true,
     product,
-    variants,
+    variants: newVarients,
   })
 }
 
@@ -116,5 +142,33 @@ export const editProduct = async (req, res) => {
   return res.status(200).json({
     success: true,
     product,
+  })
+}
+
+export const buyProduct = async (req, res) => {
+  const { variantId, quantity } = req.body
+  console.log(variantId)
+
+  const varient = await variantSchema.findById(variantId)
+
+  if (!varient) {
+    throw new CustomError("varient not found!!!", 404)
+  }
+
+  if (varient.quantity === 0) {
+    throw new CustomError("Variant stock out!!!", 404)
+  }
+
+  if (varient.quantity < quantity) {
+    throw new CustomError(`only ${varient.quantity} left...`, 404)
+  }
+
+  await variantSchema.findByIdAndUpdate(variantId, {
+    quantity: varient.quantity - quantity,
+  })
+
+  return res.status(200).json({
+    success: true,
+    message: "Order Place Successfully...",
   })
 }
